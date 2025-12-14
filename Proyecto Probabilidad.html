@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyecto 1: Cánceres cerca de un reactor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+background: linear-gradient(135deg, #1e3a5f 0%, #2d5f7f 100%);
+color: #333;
+line-height: 1.6;
+min-height: 100vh;
+padding: 20px;
+}
+.container {
+max-width: 1400px;
+margin: 0 auto;
+}
+header {
+text-align: center;
+margin-bottom: 30px;
+padding: 40px 30px;
+background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+border-radius: 20px;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+border-top: 8px solid #1e3a5f;
+position: relative;
+overflow: hidden;
+}
+header::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 8px;
+background: linear-gradient(90deg, #1e3a5f 0%, #2d5f7f 100%);
+}
+h1 {
+color: #2c3e50;
+font-size: 2.8rem;
+margin-bottom: 15px;
+font-weight: 700;
+letter-spacing: -0.5px;
+}
+.subtitle {
+color: #2d5f7f;
+font-size: 1.2rem;
+font-weight: 600;
+margin-bottom: 10px;
+}
+.integrantes {
+background: linear-gradient(135deg, #1e3a5f15 0%, #2d5f7f15 100%);
+padding: 25px;
+border-radius: 15px;
+margin-top: 25px;
+border: 2px solid #1e3a5f30;
+}
+.integrantes h2 {
+color: #2c3e50;
+margin-bottom: 12px;
+font-size: 1.3rem;
+text-align: center;
+}
+.lista-integrantes {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+gap: 12px;
+}
+.integrante {
+background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+padding: 12px 20px;
+border-radius: 12px;
+box-shadow: 0 4px 15px rgba(30, 58, 95, 0.1);
+border-left: 4px solid #1e3a5f;
+font-size: 0.95rem;
+transition: all 0.3s ease;
+}
+.integrante:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(30, 58, 95, 0.2);
+}
+.main-grid {
+display: grid;
+grid-template-columns: 1fr;
+gap: 25px;
+margin-bottom: 25px;
+}
+.box {
+background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+border-radius: 20px;
+padding: 35px;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+border-top: 6px solid transparent;
+background-clip: padding-box;
+position: relative;
+transition: all 0.3s ease;
+}
+.box::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 6px;
+background: linear-gradient(90deg, #1e3a5f 0%, #2d5f7f 100%);
+border-radius: 20px 20px 0 0;
+}
+.box:hover {
+transform: translateY(-5px);
+box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+}
+.two-column-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 25px;
+margin-top: 25px;
+}
+h2 {
+color: #1e3a5f;
+margin-bottom: 25px;
+font-size: 1.8rem;
+padding-bottom: 15px;
+border-bottom: 3px solid transparent;
+background: linear-gradient(90deg, #1e3a5f 0%, #2d5f7f 100%) left bottom
+no-repeat;
+background-size: 100% 3px;
+font-weight: 700;
+}
+h3 {
+color: #2d5f7f;
+margin: 25px 0 15px 0;
+font-size: 1.3rem;
+font-weight: 600;
+}
+p, li {
+margin-bottom: 15px;
+}
+ul {
+padding-left: 20px;
+margin-bottom: 20px;
+}
+.formula {
+background: linear-gradient(135deg, #e8eef5 0%, #d6dfe9 100%);
+padding: 18px;
+border-radius: 12px;
+margin: 15px 0;
+border-left: 5px solid #1e3a5f;
+font-family: 'Courier New', monospace;
+overflow-x: auto;
+box-shadow: 0 2px 10px rgba(30, 58, 95, 0.1);
+}
+.respuesta {
+background: linear-gradient(135deg, #e8f4f8 0%, #d4e7f0 100%);
+padding: 18px;
+border-radius: 12px;
+margin: 15px 0;
+border-left: 5px solid #2e86ab;
+font-weight: 600;
+box-shadow: 0 2px 10px rgba(46, 134, 171, 0.1);
+}
+.notas {
+background: linear-gradient(135deg, #fff9e6 0%, #fff4d4 100%);
+padding: 22px;
+border-radius: 12px;
+margin: 25px 0;
+border-left: 5px solid #e6b800;
+box-shadow: 0 2px 10px rgba(230, 184, 0, 0.1);
+}
+.form-group {
+margin-bottom: 18px;
+}
+label {
+display: block;
+margin-bottom: 6px;
+font-weight: 600;
+color: #2c3e50;
+font-size: 0.95rem;
+}
+input {
+width: 100%;
+padding: 12px 15px;
+border: 2px solid #d0dae6;
+border-radius: 10px;
+font-size: 1rem;
+transition: all 0.3s ease;
+background-color: #f8f9fb;
+}
+input:focus {
+outline: none;
+border-color: #1e3a5f;
+background-color: #ffffff;
+box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.1);
+}
+button {
+width: 100%;
+background: linear-gradient(135deg, #1e3a5f 0%, #2d5f7f 100%);
+color: white;
+border: none;
+padding: 14px;
+border-radius: 12px;
+font-size: 1.05rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+margin-top: 10px;
+box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
+position: relative;
+overflow: hidden;
+}
+button::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+transition: left 0.5s;
+}
+button:hover::before {
+left: 100%;
+}
+button:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 25px rgba(30, 58, 95, 0.4);
+}
+button:active {
+transform: translateY(0);
+box-shadow: 0 2px 10px rgba(30, 58, 95, 0.3);
+}
+.resultado-card {
+background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);
+padding: 20px;
+border-radius: 15px;
+margin-bottom: 15px;
+border-left: 5px solid #2d5f7f;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+transition: all 0.3s ease;
+}
+.resultado-card:hover {
+transform: translateX(5px);
+box-shadow: 0 6px 20px rgba(30, 58, 95, 0.15);
+}
+.resultado-card h4 {
+color: #2c3e50;
+margin-bottom: 8px;
+font-size: 1rem;
+}
+.valor-grande {
+font-size: 2rem;
+font-weight: 700;
+background: linear-gradient(135deg, #1e3a5f 0%, #2d5f7f 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+.valor-mediano {
+font-size: 1.5rem;
+font-weight: 700;
+color: #2c3e50;
+}
+.interpretacion-box {
+background-color: #fff9e6;
+padding: 18px;
+border-radius: 8px;
+margin-top: 15px;
+border-left: 4px solid #e6b800;
+}
+.alerta-critica {
+background-color: #ffe6e6;
+border-left-color: #c0392b;
+}
+.alerta-advertencia {
+background-color: #fff4e6;
+border-left-color: #e67e22;
+}
+.alerta-normal {
+background-color: #e8f8f5;
+border-left-color: #27ae60;
+}
+.chart-container {
+position: relative;
+height: 350px;
+margin-top: 20px;
+}
+.nota-metodologica {
+background: linear-gradient(135deg, #e8f4f8 0%, #d4e7f0 100%);
+padding: 18px;
+border-radius: 12px;
+margin: 15px 0;
+border-left: 5px solid #2e86ab;
+font-size: 0.92rem;
+box-shadow: 0 2px 10px rgba(46, 134, 171, 0.1);
+}
+.guia-interpretacion {
+background: linear-gradient(135deg, #e8eef5 0%, #d6dfe9 100%);
+padding: 18px;
+border-radius: 12px;
+margin-top: 15px;
+border-left: 5px solid #2d5f7f;
+box-shadow: 0 2px 10px rgba(30, 58, 95, 0.1);
+}
+.guia-interpretacion ul {
+margin-top: 10px;
+padding-left: 20px;
+}
+.guia-interpretacion li {
+margin-bottom: 8px;
+}
+#resultadosCalculadora {
+margin-top: 20px;
+}
+@media (max-width: 1024px) {
+.two-column-grid {
+grid-template-columns: 1fr;
+}
+}
+@media (max-width: 768px) {
+h1 {
+font-size: 2rem;
+}
+.box {
+padding: 20px;
+}
+.chart-container {
+height: 300px;
+}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Proyecto 1: Cánceres cerca de un reactor</h1>
+<div class="subtitle">Análisis estadístico con Distribución de Poisson</div>
+<div class="integrantes">
+<h2>Integrantes del equipo</h2>
+<div class="lista-integrantes">
+<div class="integrante">Francisco Del Olmo Martínez</div>
+<div class="integrante">Gerardo Caleb Eliab Mondragón Espitia</div>
+<div class="integrante">Ivanna Valeria Hernández Landeros</div>
+</div>
+</div>
+</header>
+<div class="main-grid">
+<!-- Desarrollo del Proyecto -->
+<div class="box">
+<h2>Desarrollo del Proyecto</h2>
+<p>Este proyecto utiliza la Distribución de Poisson para evaluar si el número
+observado de casos de cáncer es estadísticamente inusual, basándose en la información de
+que la zona costera al norte del reactor nuclear registró una tasa un 50% mayor que el
+promedio estatal.</p>
+<div class="notas">
+<p><strong>Nota:</strong> La Distribución de Poisson se caracteriza por un
+único parámetro λ (lambda), que representa tanto la media como la varianza de la
+distribución. Este parámetro es fundamental para calcular probabilidades y determinar qué
+tan inusual es un valor observado.</p>
+</div>
+<h3>Datos del Problema</h3>
+<ul>
+<li><strong>Casos observados (x):</strong> 52 casos de cáncer
+hematopoyético</li>
+<li><strong>Relación con el promedio estatal:</strong> Los 52 casos
+representan un 50% más que el promedio λ</li>
+</ul>
+<h3>1. Estimación de λ (media poblacional)</h3>
+<p>λ representa el número promedio esperado de casos a nivel estatal. Dado que
+los 52 casos observados son 50% mayores que λ, establecemos la ecuación:</p>
+<div class="formula">x = λ + 0.50λ</div>
+<div class="formula">52 = 1.50λ</div>
+<p>Despejando λ:</p>
+<div class="formula">λ = 52 / 1.50 = 34.67 casos</div>
+<div class="respuesta">Respuesta 1: La estimación de λ, el número promedio de
+casos a nivel estatal, es <strong>34.67 casos</strong>.</div>
+<h3>2. Desviación estándar (σ)</h3>
+<p>En la distribución de Poisson, la varianza es igual a la media (σ² = λ). Por lo
+tanto, la desviación estándar es:</p>
+<div class="formula">σ = √λ = √34.67 ≈ 5.89 casos</div>
+<div class="respuesta">Respuesta 2: La desviación estándar es <strong>5.89
+casos</strong>.</div>
+<h3>3. Puntaje z</h3>
+<p>El puntaje z mide cuántas desviaciones estándar está el valor observado
+respecto a la media:</p>
+<div class="formula">z = (x - λ) / σ = (52 - 34.67) / 5.89 ≈ 2.94</div>
+<div class="respuesta">Respuesta 3: El puntaje z es
+<strong>2.94</strong>.</div>
+<h3>Interpretación del puntaje z</h3>
+<p>Un puntaje z de 2.94 indica que el número de casos observados está casi 3
+desviaciones estándar por encima del promedio esperado. En estadística, valores con |z| >
+2 se consideran inusuales, ya que solo ocurren en aproximadamente el 5% de los
+casos.</p>
+<div class="interpretacion-box alerta-critica">
+<p><strong>Conclusión:</strong> Un z-score de 2.94 es estadísticamente
+inusual. Esto sugiere que es muy improbable que el número elevado de casos se deba
+únicamente a variación aleatoria.</p>
+<p><strong>Implicación:</strong> Los datos sugieren fuertemente que factores
+externos (posiblemente la radiación del reactor) están causando un incremento significativo
+en los casos de cáncer en la zona.</p>
+</div>
+</div>
+<!-- Calculadora -->
+<div class="box">
+<h2>📊 Calculadora Interactiva</h2>
+<div class="form-group">
+<label for="casosObservados">Número de casos observados (x):</label>
+<input type="number" id="casosObservados" value="52" min="1" step="1">
+</div>
+<div class="form-group">
+<label for="incrementoPorcentaje">Incremento porcentual respecto a λ
+(%):</label>
+<input type="number" id="incrementoPorcentaje" value="50" min="0" step="1">
+</div>
+<button onclick="calcularTodo()">🔄 Calcular y Actualizar Gráficos</button>
+<div class="nota-metodologica">
+<strong>📌 Nota:</strong> Este análisis utiliza la distribución de Poisson para
+calcular probabilidades exactas y el z-score para medir qué tan inusual es el valor
+observado.
+</div>
+<div class="guia-interpretacion">
+<strong>📖 Guía de interpretación del z-score:</strong>
+<ul>
+<li><strong>|z| < 2:</strong> Valor dentro del rango normal esperado</li>
+<li><strong>2 ≤ |z| < 3:</strong> Valor inusual (ocurre en ~5% de los
+casos)</li>
+<li><strong>|z| ≥ 3:</strong> Valor muy inusual (ocurre en ~0.3% de los
+casos)</li>
+</ul>
+</div>
+<!-- Resultados (se muestran después de calcular) -->
+<div id="resultadosCalculadora" style="display: none;">
+<h3 style="margin-top: 25px;">📈 Resultados</h3>
+<div class="resultado-card">
+<h4>λ (Media poblacional estimada)</h4>
+<div class="valor-grande" id="lambdaValor">34.67</div>
+<small>casos esperados a nivel estatal</small>
+</div>
+<div class="resultado-card">
+<h4>σ (Desviación estándar)</h4>
+<div class="valor-mediano" id="sigmaValor">5.89</div>
+<small>σ = √λ (propiedad de Poisson)</small>
+</div>
+<div class="resultado-card">
+<h4>Puntaje z</h4>
+<div class="valor-mediano" id="zValor">2.94</div>
+<small>z = (x - λ) / σ</small>
+</div>
+<div class="resultado-card">
+<h4>Probabilidad acumulada P(X ≥ x)</h4>
+<div class="valor-grande" id="pValor" style="color: #c0392b;">0.0016</div>
+<small>Probabilidad de observar este valor o mayor</small>
+</div>
+<div id="interpretacionCalculadora" class="interpretacion-box alerta-critica">
+<h3>⚠️ Conclusión: Evento Altamente Inusual</h3>
+<p><strong>Probabilidad = 0.16%:</strong> Si el promedio real de casos
+fuera λ = 34.67, solo habría un 0.16% de probabilidad de observar 52 o más casos por pura
+casualidad.</p>
+<p><strong>Puntaje z = 2.94:</strong> El valor observado está 2.94
+desviaciones estándar por encima de la media esperada.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Gráficos -->
+<div class="two-column-grid">
+<div class="box">
+<h2>📊 Distribución de Poisson</h2>
+<div class="chart-container">
+<canvas id="poissonChart"></canvas>
+</div>
+<p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+<strong>Interpretación:</strong> Este gráfico muestra la probabilidad de cada
+posible número de casos. Las barras azules representan el rango normal (μ ± 2σ), mientras
+que las barras rojas muestran valores inusuales.
+</p>
+</div>
+<div class="box">
+<h2>📉 Aproximación Normal</h2>
+<div class="chart-container">
+<canvas id="normalChart"></canvas>
+</div>
+<p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+<strong>Interpretación:</strong> La curva muestra la aproximación normal de
+la distribución de Poisson. Las líneas naranjas marcan ±2σ y la línea roja muestra el valor
+observado.
+</p>
+</div>
+</div>
+</div>
+<script>
+let poissonChartInstance = null;
+let normalChartInstance = null;
+function factorial(n) {
+if (n <= 1) return 1;
+return n * factorial(n - 1);
+}
+function poissonPMF(k, lambda) {
+return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+}
+function poissonCDF(x, lambda) {
+let sum = 0;
+for (let k = 0; k <= x; k++) {
+sum += poissonPMF(k, lambda);
+}
+return sum;
+}
+function normalPDF(x, mu, sigma) {
+return (1 / (sigma * Math.sqrt(2 * Math.PI))) *
+Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+}
+function calcularTodo() {
+const x = parseFloat(document.getElementById('casosObservados').value);
+const incremento =
+parseFloat(document.getElementById('incrementoPorcentaje').value);
+const lambda = x / (1 + incremento/100);
+const sigma = Math.sqrt(lambda);
+const z = (x - lambda) / sigma;
+const p_valor = 1 - poissonCDF(x - 1, lambda);
+document.getElementById('resultadosCalculadora').style.display = 'block';
+document.getElementById('lambdaValor').textContent = lambda.toFixed(2);
+document.getElementById('sigmaValor').textContent = sigma.toFixed(2);
+document.getElementById('zValor').textContent = z.toFixed(2);
+document.getElementById('pValor').textContent = p_valor.toFixed(6);
+actualizarInterpretacion(p_valor, z, lambda, x);
+actualizarGraficoPoisson(lambda, x);
+actualizarGraficoNormal(lambda, sigma, x);
+}
+function actualizarInterpretacion(p, z, lambda, x) {
+const box = document.getElementById('interpretacionCalculadora');
+const pPorcentaje = (p * 100).toFixed(2);
+let clase = 'alerta-normal';
+let emoji = '✅';
+let conclusion = 'Evento Normal';
+let probabilidadTexto = `Si el promedio real de casos fuera λ = ${lambda.toFixed(2)},
+habría un ${pPorcentaje}% de probabilidad de observar ${x} o más casos.`;
+let zTexto = `El valor observado está ${Math.abs(z).toFixed(2)} desviaciones
+estándar de la media.`;
+if (Math.abs(z) >= 3) {
+clase = 'alerta-critica';
+emoji = '⚠️';
+conclusion = 'Evento Altamente Inusual';
+probabilidadTexto = `Si el promedio real de casos fuera λ = ${lambda.toFixed(2)},
+solo habría un ${pPorcentaje}% de probabilidad de observar ${x} o más casos.`;
+zTexto = `El valor observado está ${Math.abs(z).toFixed(2)} desviaciones estándar
+${z > 0 ? 'por encima' : 'por debajo'} de la media. Muy inusual.`;
+} else if (Math.abs(z) >= 2) {
+clase = 'alerta-advertencia';
+emoji = '📝';
+conclusion = 'Evento Inusual';
+probabilidadTexto = `Si el promedio real de casos fuera λ = ${lambda.toFixed(2)},
+habría un ${pPorcentaje}% de probabilidad de observar ${x} o más casos.`;
+zTexto = `El valor observado está ${Math.abs(z).toFixed(2)} desviaciones estándar
+${z > 0 ? 'por encima' : 'por debajo'} de la media.`;
+}
+box.className = 'interpretacion-box ' + clase;
+box.innerHTML = `
+<h3>${emoji} Conclusión: ${conclusion}</h3>
+<p><strong>Probabilidad = ${pPorcentaje}%:</strong> ${probabilidadTexto}</p>
+<p><strong>Puntaje z = ${z.toFixed(2)}:</strong> ${zTexto}</p>
+`;
+}
+function actualizarGraficoPoisson(lambda, x_obs) {
+const ctx = document.getElementById('poissonChart').getContext('2d');
+const max_k = Math.ceil(lambda + 4 * Math.sqrt(lambda));
+const labels = [];
+const data = [];
+const colors = [];
+for (let k = 0; k <= max_k; k++) {
+labels.push(k);
+const prob = poissonPMF(k, lambda);
+data.push(prob);
+if (k >= x_obs) {
+colors.push('rgba(231, 76, 60, 0.7)');
+} else if (k >= lambda - 2*Math.sqrt(lambda) && k <= lambda +
+2*Math.sqrt(lambda)) {
+colors.push('rgba(74, 111, 165, 0.6)');
+} else {
+colors.push('rgba(149, 165, 166, 0.4)');
+}
+}
+if (poissonChartInstance) {
+poissonChartInstance.destroy();
+}
+poissonChartInstance = new Chart(ctx, {
+type: 'bar',
+data: {
+labels: labels,
+datasets: [{
+label: 'P(X = k)',
+data: data,
+backgroundColor: colors,
+borderWidth: 1
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { display: true },
+title: {
+display: true,
+text: `Distribución de Poisson (λ = ${lambda.toFixed(2)})`
+}
+},
+scales: {
+y: {
+beginAtZero: true,
+title: { display: true, text: 'Probabilidad' }
+},
+x: {
+title: { display: true, text: 'Número de casos (k)' }
+}
+}
+}
+});
+}
+function actualizarGraficoNormal(lambda, sigma, x_obs) {
+const ctx = document.getElementById('normalChart').getContext('2d');
+const min_x = Math.max(0, lambda - 4*sigma);
+const max_x = lambda + 4*sigma;
+const step = (max_x - min_x) / 200;
+const labels = [];
+const data = [];
+for (let x = min_x; x <= max_x; x += step) {
+labels.push(x.toFixed(1));
+data.push(normalPDF(x, lambda, sigma));
+}
+if (normalChartInstance) {
+normalChartInstance.destroy();
+}
+normalChartInstance = new Chart(ctx, {
+type: 'line',
+data: {
+labels: labels,
+datasets: [{
+label: 'Densidad Normal',
+data: data,
+borderColor: 'rgba(74, 111, 165, 1)',
+backgroundColor: 'rgba(74, 111, 165, 0.1)',
+fill: true,
+tension: 0.4,
+pointRadius: 0
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { display: true },
+title: {
+display: true,
+text: `Aproximación Normal (μ = ${lambda.toFixed(2)}, σ =
+${sigma.toFixed(2)})`
+}
+},
+scales: {
+y: {
+beginAtZero: true,
+title: { display: true, text: 'Densidad' }
+},
+x: {
+title: { display: true, text: 'Número de casos' },
+ticks: {
+callback: function(value, index) {
+return index % 20 === 0 ? this.getLabelForValue(value) : '';
+}
+}
+}
+}
+}
+});
+}
+window.onload = calcularTodo;
+</script>
+</body>
+</html>
